@@ -7,6 +7,9 @@ from tkinter import messagebox
 from FuncMenu import cargar_icono
 import FuncMenu as db
 from tkinter import simpledialog
+import tkinter as tk
+from tkinter import colorchooser
+import pygame
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("green")
@@ -150,30 +153,67 @@ def cargar_notas():
         notas_widgets[nid] = (frame, btn_nota, btn_menu)
 
 def nueva_nota():
-    popup = ctk.CTkToplevel(ventana)
-    popup.title("Nueva Nota")
-    popup.geometry("300x170")
-    popup.grab_set()
+    global frame_editor
+    if frame_editor:
+        frame_editor.destroy()
 
-    ctk.CTkLabel(popup, text="Título de la nota:").pack(pady=(12, 6))
-    entrada = ctk.CTkEntry(popup, width=250)
-    entrada.pack(pady=5)
+    frame_editor = ctk.CTkFrame(contenido, fg_color="#FAFAFA", corner_radius=12)
+    frame_editor.grid(row=0, column=0, sticky="nsew", padx=15, pady=15)
 
-    def guardar_titulo():
+    # Título
+    titulo = ctk.CTkLabel(
+        frame_editor,
+        text="📒 Nueva Nota",
+        font=ctk.CTkFont(size=18, weight="bold"),
+        text_color="#4A148C"
+    )
+    titulo.pack(pady=(10, 8))
+
+    # Entrada de texto
+    entrada = ctk.CTkEntry(
+        frame_editor,
+        width=400,
+        placeholder_text="Escribe el título de tu nota..."
+    )
+    entrada.pack(pady=10, padx=10)
+    entrada.focus()
+
+    # Separador
+    ctk.CTkFrame(frame_editor, height=1, fg_color="#DDDDDD").pack(fill="x", padx=20, pady=10)
+
+    # Botones
+    botones = ctk.CTkFrame(frame_editor, fg_color="transparent")
+    botones.pack(pady=10)
+
+    btn_crear = ctk.CTkButton(
+        botones, text="✔ Crear", fg_color="#B99AD9", text_color="white",
+        corner_radius=8, width=100
+    )
+    btn_crear.pack(side="left", padx=10)
+
+    btn_cancelar = ctk.CTkButton(
+        botones, text="✖ Cancelar", fg_color="#F44336", text_color="white",
+        corner_radius=8, width=100
+    )
+    btn_cancelar.pack(side="left", padx=10)
+
+    # Funciones
+    def guardar():
         titulo = entrada.get().strip()
         if not titulo:
             messagebox.showwarning("Atención", "El título no puede estar vacío.")
             return
         nid = agregar_nota_db(titulo)
         if nid:
+            frame_editor.destroy()
             cargar_notas()
-            popup.destroy()
             mostrar_nota(nid)
 
-    btns = ctk.CTkFrame(popup, fg_color="transparent")
-    btns.pack(pady=10)
-    ctk.CTkButton(btns, text="Crear", command=guardar_titulo, fg_color="#B99AD9", text_color="white").pack(side="left", padx=5)
-    ctk.CTkButton(btns, text="Cancelar", command=popup.destroy, fg_color="#F44336", text_color="white").pack(side="left", padx=5)
+    def cancelar():
+        frame_editor.destroy()
+
+    btn_crear.configure(command=guardar)
+    btn_cancelar.configure(command=cancelar)
 
 def mostrar_nota(nota_id):
     global frame_editor, text_nota, nota_actual_id
@@ -218,15 +258,53 @@ def mostrar_nota(nota_id):
 
     ctk.CTkButton(header, text="Renombrar", command=renombrar, fg_color="#A07BEF", text_color="white").pack(side="left")
 
-    text_nota = ctk.CTkTextbox(frame_editor, width=600, height=300, font=ctk.CTkFont(size=14))
-    text_nota.pack(fill="both", expand=True, padx=10, pady=5)
-    text_nota.insert("0.0", contenido_txt or "")
+    # ------------------ BARRA DE HERRAMIENTAS FORMATO ------------------
+    toolbar = ctk.CTkFrame(frame_editor, fg_color="transparent")
+    toolbar.pack(fill="x", padx=10, pady=(0,5))
 
+    # ------------------ TEXT BOX CON FORMATO ------------------
+    text_nota = tk.Text(frame_editor, wrap="word", font=("Arial", 14))
+    text_nota.pack(fill="both", expand=True, padx=10, pady=5)
+    text_nota.insert("1.0", contenido_txt or "")
+
+
+    # Configurar tags
+    text_nota.tag_configure("bold", font=("Arial", 14, "bold"))
+    text_nota.tag_configure("italic", font=("Arial", 14, "italic"))
+    text_nota.tag_configure("underline", font=("Arial", 14, "underline"))
+
+    # Funciones de formato
+    def toggle_tag(tag):
+        try:
+            current_tags = text_nota.tag_names("sel.first")
+            if tag in current_tags:
+                text_nota.tag_remove(tag, "sel.first", "sel.last")
+            else:
+                text_nota.tag_add(tag, "sel.first", "sel.last")
+        except tk.TclError:
+            messagebox.showinfo("Info", "Selecciona texto primero")
+
+    def cambiar_color():
+        color = colorchooser.askcolor()[1]
+        if color:
+            try:
+                text_nota.tag_add(color, "sel.first", "sel.last")
+                text_nota.tag_configure(color, foreground=color)
+            except tk.TclError:
+                messagebox.showinfo("Info", "Selecciona texto primero")
+
+    # Botones de formato
+    ctk.CTkButton(toolbar, text="B", width=30, command=lambda: toggle_tag("bold")).pack(side="left", padx=2)
+    ctk.CTkButton(toolbar, text="I", width=30, command=lambda: toggle_tag("italic")).pack(side="left", padx=2)
+    ctk.CTkButton(toolbar, text="U", width=30, command=lambda: toggle_tag("underline")).pack(side="left", padx=2)
+    ctk.CTkButton(toolbar, text="Color", width=50, command=cambiar_color).pack(side="left", padx=2)
+
+    # ------------------ BOTONES GUARDAR / ELIMINAR / CERRAR ------------------
     botones_frame = ctk.CTkFrame(frame_editor, fg_color="transparent")
     botones_frame.pack(pady=10)
 
     def guardar_contenido():
-        contenido_guardado = text_nota.get("0.0", "end").strip()
+        contenido_guardado = text_nota.get("1.0", "end").strip()
         try:
             db.actualizar_nota(nota_id, contenido_guardado)
             cargar_notas()
@@ -248,6 +326,7 @@ def mostrar_nota(nota_id):
             frame_editor.destroy()
 
     ctk.CTkButton(botones_frame, text="Guardar", fg_color="#B99AD9", text_color="white", command=guardar_contenido).pack(side="left", padx=5)
+    ctk.CTkButton(botones_frame, text="Eliminar", fg_color="#F44336", text_color="white", command=eliminar_nota).pack(side="left", padx=5)
     ctk.CTkButton(botones_frame, text="Cerrar", fg_color="#9E9E9E", text_color="white", command=cerrar_editor).pack(side="left", padx=5)
 
 ### carpetas ###
@@ -317,8 +396,10 @@ def cargar_carpetas():
                     except Exception as e:
                         messagebox.showerror("Error", f"No se pudo eliminar la carpeta.\n{e}")
 
-            ctk.CTkButton(menu, text="✏️ Editar", fg_color="transparent", text_color="#333333", anchor="w", command=editar).pack(fill="x", padx=5, pady=2)
-            ctk.CTkButton(menu, text="🗑️ Borrar", fg_color="transparent", text_color="#333333", anchor="w", command=borrar).pack(fill="x", padx=5, pady=2)
+            ctk.CTkButton(menu, text="✏️ Editar", fg_color="transparent", text_color="#333333",
+                          anchor="w", command=editar).pack(fill="x", padx=5, pady=2)
+            ctk.CTkButton(menu, text="🗑️ Borrar", fg_color="transparent", text_color="#333333",
+                          anchor="w", command=borrar).pack(fill="x", padx=5, pady=2)
 
             menu.bind("<FocusOut>", lambda e: menu.destroy())
             menu.focus_force()
@@ -337,13 +418,15 @@ def cargar_carpetas():
         carpetas_widgets[cid] = (frame, btn_carpeta, btn_menu)
 
 def nueva_carpeta():
-    popup = ctk.CTkToplevel(ventana)
-    popup.title("Nueva Carpeta")
-    popup.geometry("300x170")
-    popup.grab_set()
+    global frame_editor
+    if frame_editor:
+        frame_editor.destroy()
 
-    ctk.CTkLabel(popup, text="Nombre de la carpeta:").pack(pady=(12, 6))
-    entrada = ctk.CTkEntry(popup, width=250)
+    frame_editor = ctk.CTkFrame(contenido, fg_color="white")
+    frame_editor.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+
+    ctk.CTkLabel(frame_editor, text="Nombre de la carpeta:", font=ctk.CTkFont(size=14)).pack(pady=(12, 6))
+    entrada = ctk.CTkEntry(frame_editor, width=400)
     entrada.pack(pady=5)
 
     def guardar_nombre():
@@ -354,12 +437,16 @@ def nueva_carpeta():
         cid = agregar_carpeta_db(nombre)
         if cid:
             cargar_carpetas()
-            popup.destroy()
+            mostrar_carpeta(cid)  # abre la carpeta recién creada
 
-    btns = ctk.CTkFrame(popup, fg_color="transparent")
-    btns.pack(pady=10)
-    ctk.CTkButton(btns, text="Crear", command=guardar_nombre, fg_color="#B99AD9", text_color="white").pack(side="left", padx=5)
-    ctk.CTkButton(btns, text="Cancelar", command=popup.destroy, fg_color="#F44336", text_color="white").pack(side="left", padx=5)
+    botones = ctk.CTkFrame(frame_editor, fg_color="transparent")
+    botones.pack(pady=10)
+
+    ctk.CTkButton(botones, text="Crear", command=guardar_nombre,
+                  fg_color="#B99AD9", text_color="white").pack(side="left", padx=5)
+    ctk.CTkButton(botones, text="Cancelar",
+                  command=lambda: frame_editor.destroy(),
+                  fg_color="#F44336", text_color="white").pack(side="left", padx=5)
 
 def mostrar_carpeta(carpeta_id):
     global frame_editor
@@ -383,7 +470,6 @@ def mostrar_carpeta(carpeta_id):
 
     titulo = ctk.CTkLabel(frame_editor, text=f"📂 {nombre}", font=ctk.CTkFont(size=18, weight="bold"), text_color="#333333")
     titulo.pack(pady=10)
-
 
 # ---------- PANEL DERECHO (calendario, temporizador, sonidos) ----------
 sidebar_derecho = ctk.CTkFrame(ventana, width=250, corner_radius=0, fg_color="white")
