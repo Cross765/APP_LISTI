@@ -75,7 +75,7 @@ body {
 .main {
   flex: 1;
   background: linear-gradient(to bottom right, #f3e8ff, #7c3aed); /* degradado amatista suave */
-  padding: 60px 40px;
+  padding: 80px 80px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -263,7 +263,6 @@ body {
   flex-direction: column;
 }
 
-/* Cuando se usa un anchor interno #verificacion */
 :target {
   display: flex;
 }
@@ -273,25 +272,365 @@ body {
   margin-bottom: 15px;
 }
 
-/* ---------------- RESPONSIVE ---------------- */
-@media (max-width: 750px) {
-  .main {
-    padding: 20px;
-  }
+/* ---------------- SECCIÓN DE TARJETAS / SPONSOR ---------------- */
+.cards-section {
+  background: #fff;
+  padding: 100px 60px;
+  text-align: center;
+}
 
-  .banner {
-    flex-direction: column;
-    text-align: center;
-  }
+.cards-section h2 {
+  font-size: 2rem;
+  color: #4c1d95;
+  margin-bottom: 10px;
+}
 
-  .banner .image img {
-    margin-top: 20px;
-  }
+.cards-section .subtitle {
+  color: #5b21b6;
+  font-size: 1rem;
+  margin-bottom: 40px;
+}
 
-  .ayuda-content,
-  .registro-content,
-  .verificacion-content {
-    margin: 30px 15px;
-    padding: 20px;
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 25px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.card {
+  background: rgb(200, 195, 208);
+  border: 1px solid #8f67d1;
+  border-radius: 16px;  
+  padding: 25px;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-align: left;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 8px 18px rgba(124, 58, 237, 0.25);
+}
+
+.card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+  color: #7c3aed;
+}
+
+.card p {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.4;
+}
+
+.card img {
+  width: 80px;       /* tamaño de los íconos */
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+
+.main-image-section {
+  text-align: center;
+  margin: 60px 0;
+}
+
+.main-image {
+  width: 50%;       /* ocupa todo el ancho disponible */
+  max-width: 900px;  /* límite para que no se agrande demasiado */
+  height: auto;      /* mantiene proporción */
+  display: block;
+  margin: 0 auto;    /* centra horizontal */
+  border-radius: 12px; /* opcional, bordes redondeados */
+}
+
+/* ---------------- SECCIÓN DE FRASE ---------------- */
+
+/* Banner final específico */
+.final-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;   
+  min-height: 80vh; 
+  gap: 20px;
+  text-align: center;       
+  background: linear-gradient(to bottom right, #f3e8ff, #7c3aed);
+}
+
+.final-banner .text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;          
+  gap: 15px;             
+}
+
+.final-banner .download2 {
+  padding: 12px 25px;
+  background-color: #fefefe;
+  color: #7c3aed;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.final-banner .imagen img {
+  width: 200px;
+  border-radius: 15px;
+  margin-top: 20px;            
+  transition: transform 0.9s ease, box-shadow 0.4s ease;
+  box-shadow: 0 5px 15px rgba(253, 252, 252, 0.2);
+}
+
+/* ---------------- BOTON ---------------- */
+
+.back-to-top {
+  position: fixed;
+  right: 20px;  /* distancia del borde derecho */
+  bottom: 20px; /* distancia del borde inferior */
+  background: #7c3aed;
+  color: rgb(255, 255, 255);
+  padding: 10px 15px;
+  border-radius: 15px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+/* SECCION CARACTERISTICAS */
+.seccion-cadena {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+
+.caracteristica {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.caracteristica.reverse {
+  flex-direction: row-reverse;
+}
+
+.caracteristica-imagen img {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.caracteristica-texto {
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.caracteristica-texto h2 {
+  font-size: 2rem;
+  color: #1f1f1f;
+  margin-bottom: 15px;
+}
+
+.caracteristica-texto p {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* ---------------- ANIMACIONES ---------------- */
+
+/* Fade-in general */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
   }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Escala suave al aparecer imágenes */
+@keyframes scaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Títulos con efecto sutil de entrada */
+@keyframes titlePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Aplicación de animaciones a secciones */
+.banner,
+.cards-section,
+.seccion-cadena,
+.final-banner {
+  opacity: 0;
+  animation: fadeInUp 1s ease forwards;
+  animation-delay: 0.3s; /* se puede cambiar para escalonar */
+}
+
+/* Imagen del banner */
+.banner .image img {
+  opacity: 0;
+  animation: scaleIn 1s ease forwards;
+  animation-delay: 0.5s;
+}
+
+/* Tarjetas de sponsor */
+.card {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+.cards-grid .card:nth-child(1) { animation-delay: 0.2s; }
+.cards-grid .card:nth-child(2) { animation-delay: 0.4s; }
+.cards-grid .card:nth-child(3) { animation-delay: 0.6s; }
+.cards-grid .card:nth-child(4) { animation-delay: 0.8s; }
+
+/* Hover en tarjetas */
+.card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0px 12px 20px rgba(124, 58, 237, 0.35);
+}
+
+/* Hover en botones */
+.download,
+.registro-form button,
+.final-banner .download2,
+.back-to-top {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.download:hover,
+.registro-form button:hover,
+.final-banner .download2:hover,
+.back-to-top:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(124, 58, 237, 0.4);
+}
+
+/* Animación de títulos */
+.banner h1,
+.cards-section h2,
+.seccion-cadena h2,
+.final-banner .text h1 {
+  opacity: 0;
+  animation: titlePop 1s ease forwards;
+}
+
+.banner h1 { animation-delay: 0.3s; }
+.cards-section h2 { animation-delay: 0.4s; }
+.seccion-cadena h2 { animation-delay: 0.5s; }
+.final-banner .text h1 { animation-delay: 0.3s; }
+
+/* Animación de imágenes de características */
+.caracteristica-imagen img {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 1s ease forwards;
+}
+
+.caracteristica:nth-child(1) .caracteristica-imagen img { animation-delay: 0.2s; }
+.caracteristica:nth-child(2) .caracteristica-imagen img { animation-delay: 0.4s; }
+.caracteristica:nth-child(3) .caracteristica-imagen img { animation-delay: 0.6s; }
+
+/* Animación de texto de características */
+.caracteristica-texto {
+  opacity: 0;
+  transform: translateY(15px);
+  animation: fadeInUp 1s ease forwards;
+}
+
+.caracteristica:nth-child(1) .caracteristica-texto { animation-delay: 0.3s; }
+.caracteristica:nth-child(2) .caracteristica-texto { animation-delay: 0.5s; }
+.caracteristica:nth-child(3) .caracteristica-texto { animation-delay: 0.7s; }
+
+/* ---------------- ANIMACIONES AVANZADAS ---------------- */
+
+/* Fade-in al hacer scroll (más visible) */
+@keyframes fadeInScroll {
+  0% { opacity: 0; transform: translateY(150px); } 
+  100% { opacity: 1; transform: translateY(0); }   
+}
+
+/* Pulso fuerte */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }  /* más grande que antes */
+  100% { transform: scale(1); }
+}
+
+/* Bounce más marcado para botones importantes */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Parpadeo más intenso */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ---------------- BOTONES INTERACTIVOS ---------------- */
+.download:hover,
+.final-banner .download2:hover,
+.registro-form button:hover {
+  animation: bounce 0.6s ease;
+}
+
+.back-to-top:hover {
+  animation: pulse 1s infinite;
+}
+
+/* ---------------- EFECTO FLOATING EN IMÁGENES ---------------- */
+.banner .image img,
+.final-banner .imagen img {
+  animation: floatImg 3s ease-in-out infinite;
+}
+
+@keyframes floatImg {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-30px); }
+}
+
+/* ---------------- ANIMACIÓN CONTINUA DE FONDO ---------------- */
+.main {
+  background: linear-gradient(135deg, #f3e8ff, #7c3aed, #d8b4fe);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
