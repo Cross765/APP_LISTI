@@ -5,6 +5,7 @@ import os
 import sys
 from FuncMain import registrar_usuario, login, verificar_codigo
 from FuncMain import cargar_sesion
+
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("green")
 
@@ -104,7 +105,6 @@ def mostrar_login():
         hover_color="#8A5DD9",
         text_color="white"
     ).place(relx=0.7, rely=0.65, anchor="center")
-
 
 # Muestra la pantalla de registro
 def mostrar_registro():

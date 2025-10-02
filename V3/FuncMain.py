@@ -11,11 +11,11 @@ from email.mime.multipart import MIMEMultipart
 from tkinter import messagebox
 import json
 
-DB_HOST = "dpg-d2qr6g15pdvs738hp4k0-a.oregon-postgres.render.com"
+DB_HOST = "dpg-d3elbeer433s73eppof0-a.oregon-postgres.render.com"
 DB_PORT = "5432"
-DB_NAME = "listi_if8a"
-DB_USER = "listi_if8a_user"
-DB_PASS = "zDvjad3QM9gLJn1zE8OqIkOr35K6MX5u"
+DB_NAME = "listi_7mwu"
+DB_USER = "listi_7mwu_user"
+DB_PASS = "cPEEWPBRxx4R0jnyfym6FebpEVGgRWhB"
 
 EMAIL_EMISOR = "facundohotmailcarabajal@gmail.com"
 EMAIL_PASSWORD = "kadfpjtyecevcplr"

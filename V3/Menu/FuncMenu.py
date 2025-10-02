@@ -8,11 +8,11 @@ def cargar_icono(ruta):
     except:
         return None
 
-DB_HOST = "dpg-d2qr6g15pdvs738hp4k0-a.oregon-postgres.render.com"
+DB_HOST = "dpg-d3elbeer433s73eppof0-a.oregon-postgres.render.com"
 DB_PORT = "5432"
-DB_NAME = "listi_if8a"
-DB_USER = "listi_if8a_user"
-DB_PASS = "zDvjad3QM9gLJn1zE8OqIkOr35K6MX5u"
+DB_NAME = "listi_7mwu"
+DB_USER = "listi_7mwu_user"
+DB_PASS = "cPEEWPBRxx4R0jnyfym6FebpEVGgRWhB"
 
 def get_conn():
     return psycopg2.connect(
@@ -23,32 +23,6 @@ def get_conn():
         password=DB_PASS,
         sslmode="require",
     )
-
-def ensure_schema():
-    """Crea la tabla de notas si no existe."""
-    sql = """
-    CREATE TABLE IF NOT EXISTS notas (
-        id SERIAL PRIMARY KEY,
-        usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
-        titulo TEXT NOT NULL,
-        contenido TEXT,
-        fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        fecha_modificacion TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-
-    CREATE INDEX IF NOT EXISTS idx_notas_usuario ON notas(usuario_id);
-    CREATE INDEX IF NOT EXISTS idx_notas_fecha_mod ON notas(fecha_modificacion);
-    """
-    conn = None
-    cur = None
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute(sql)
-        conn.commit()
-    finally:
-        if cur: cur.close()
-        if conn: conn.close()
 
 def obtener_usuario(nombre_usuario: str):
     conn = None
@@ -63,7 +37,7 @@ def obtener_usuario(nombre_usuario: str):
         if cur: cur.close()
         if conn: conn.close()
 
-
+##### notas #####
 def crear_note(usuario_id: int, titulo: str) -> int:
     sql = """
     INSERT INTO notas (usuario_id, titulo, contenido)
@@ -87,7 +61,7 @@ def listar_notas(usuario_id: int):
     sql = """
     SELECT id, titulo
     FROM notas
-    WHERE usuario_id = %s
+    WHERE usuario_id = %s AND carpeta_id IS NULL
     ORDER BY fecha_modificacion DESC, id DESC;
     """
     conn = None
@@ -96,6 +70,24 @@ def listar_notas(usuario_id: int):
         conn = get_conn()
         cur = conn.cursor()
         cur.execute(sql, (usuario_id,))
+        return cur.fetchall()
+    finally:
+        if cur: cur.close()
+        if conn: conn.close()
+
+def listar_notas_en_carpeta(carpeta_id: int):
+    sql = """
+    SELECT id, titulo
+    FROM notas
+    WHERE carpeta_id = %s
+    ORDER BY fecha_modificacion DESC, id DESC;
+    """
+    conn = None
+    cur = None
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute(sql, (carpeta_id,))
         return cur.fetchall()
     finally:
         if cur: cur.close()
@@ -162,8 +154,41 @@ def borrar_note(nota_id: int):
         if cur: cur.close()
         if conn: conn.close()
 
+def mover_nota(nota_id: int, carpeta_id: int):
+    sql = """
+    UPDATE notas
+    SET carpeta_id = %s, fecha_modificacion = NOW()
+    WHERE id = %s;
+    """
+    conn = None
+    cur = None
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute(sql, (carpeta_id, nota_id))
+        conn.commit()
+    finally:
+        if cur: cur.close()
+        if conn: conn.close()
 
-##### carpetas ####
+def quitar_de_carpeta(nota_id: int):
+    sql = """
+    UPDATE notas
+    SET carpeta_id = NULL, fecha_modificacion = NOW()
+    WHERE id = %s;
+    """
+    conn = None
+    cur = None
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute(sql, (nota_id,))
+        conn.commit()
+    finally:
+        if cur: cur.close()
+        if conn: conn.close()
+
+##### carpetas #####
 def crear_carpeta(usuario_id: int, nombre: str) -> int:
     sql = """
     INSERT INTO carpetas (usuario_id, nombre)
@@ -183,13 +208,12 @@ def crear_carpeta(usuario_id: int, nombre: str) -> int:
         if cur: cur.close()
         if conn: conn.close()
 
-
 def listar_carpetas(usuario_id: int):
     sql = """
     SELECT id, nombre
     FROM carpetas
     WHERE usuario_id = %s
-    ORDER BY fecha_modificacion DESC, id DESC;
+    ORDER BY fecha_creacion DESC, id DESC;
     """
     conn = None
     cur = None
@@ -216,11 +240,10 @@ def traer_carpeta(carpeta_id: int):
         if cur: cur.close()
         if conn: conn.close()
 
-
 def renombrar_carpeta(carpeta_id: int, nuevo_nombre: str):
     sql = """
     UPDATE carpetas
-    SET nombre = %s, fecha_modificacion = NOW()
+    SET nombre = %s
     WHERE id = %s;
     """
     conn = None
@@ -233,7 +256,6 @@ def renombrar_carpeta(carpeta_id: int, nuevo_nombre: str):
     finally:
         if cur: cur.close()
         if conn: conn.close()
-
 
 def borrar_carpeta(carpeta_id: int):
     sql = "DELETE FROM carpetas WHERE id = %s;"
