@@ -487,6 +487,10 @@ body {
   }
 }
 
+.construccion-banner{ 
+  color: #fff;
+}
+
 /* Aplicación de animaciones a secciones */
 .banner,
 .cards-section,
