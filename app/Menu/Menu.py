@@ -678,11 +678,11 @@ pygame.mixer.init()
 Sonidos = os.path.join(os.path.dirname(__file__))
 
 sonidos = {
-    "Lluvia suave": os.path.join(Sonidos, "Sonidos", "LluviaSuave.mp3"),
+    "Lluvia suave": os.path.join(Sonidos, "Sonidos", "LLuvia.mp3"),
     "Meditación": os.path.join(Sonidos, "Sonidos", "Relax.mp3"),
-    "Ambiente": os.path.join(Sonidos, "Sonidos", "Ambiente.mp3"),
-    "Espacio": os.path.join(Sonidos, "Sonidos", "Espacio.mp3"),
-    "Naturaleza": os.path.join(Sonidos, "Sonidos", "Naturalez.mp3")
+    "Rio": os.path.join(Sonidos, "Sonidos", "Rio.mp3"),
+    "Jazz": os.path.join(Sonidos, "Sonidos", "Jazz.mp3"),
+    "Naturaleza": os.path.join(Sonidos, "Sonidos", "Naturaleza.mp3")
 }
 
 titulo_sonidos = ctk.CTkLabel(sidebar_derecho, text="Sonidos Relajantes", font=ctk.CTkFont(size=16, weight="bold", family="Comic Sans MS"), text_color="#333333")
@@ -717,10 +717,10 @@ def agregar_sonido(nombre, color_fondo, color_icono):
 
 # Agregar los sonidos
 agregar_sonido("Lluvia suave", "#F6F2FF", "#B99AD9")
+agregar_sonido("Naturaleza", "#EBF2B6", "#A3B044")
+agregar_sonido("Rio", "#EBF2B6", "#A3B044")
+agregar_sonido("Jazz", "#EBF2B6", "#A3B044")
 agregar_sonido("Meditación", "#EBF2B6", "#A3B044")
-agregar_sonido("Relax", "#EBF2B6", "#A3B044")
-agregar_sonido("Relax", "#EBF2B6", "#A3B044")
-agregar_sonido("Relax", "#EBF2B6", "#A3B044")
 
 # PANEL CENTRAL
 panel_central = ctk.CTkFrame(ventana, fg_color="transparent")
