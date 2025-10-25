@@ -10,7 +10,6 @@ from tkinter import simpledialog
 import tkinter as tk
 from tkinter import colorchooser
 import pygame
-from tkcalendar import DateEntry
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("green")
@@ -64,7 +63,6 @@ notas_widgets = {}
 frame_editor = None
 text_nota = None
 nota_actual_id = None
-
 
 def agregar_nota_db(titulo):
     try:
@@ -475,7 +473,7 @@ def mostrar_carpeta(carpeta_id):
                           text_color="#333333")
     titulo.pack(pady=10)
 
-    # --- Listar notas de la carpeta ---
+    # Listar notas de la carpeta
     try:
         notas = db.listar_notas_en_carpeta(carpeta_id)
         if not notas:
@@ -594,6 +592,81 @@ def mostrar_carpeta(carpeta_id):
     except Exception as e:
         messagebox.showerror("Error", f"No se pudieron cargar las notas de la carpeta.\n{e}")
 
+# tablero
+def mostrar_tablero():
+    global frame_editor
+    if frame_editor:
+        frame_editor.destroy()
+
+    frame_editor = ctk.CTkFrame(contenido, fg_color="white")
+    frame_editor.grid(row=0, column=0, sticky="nsew", padx=15, pady=15)
+
+    titulo = ctk.CTkLabel(
+        frame_editor,
+        text="📊 Dashboard / Actividad Reciente",
+        font=ctk.CTkFont(size=22, weight="bold"),
+        text_color="#4A148C"
+    )
+    titulo.pack(pady=10)
+
+    # Traer los datos desde la DB
+    notas_creadas = db.obtener_ultimas_notas_creadas(usuario_id)
+    carpetas_creadas = db.obtener_ultimas_carpetas_creadas(usuario_id)
+    notas_modificadas = db.obtener_ultimas_notas_modificadas(usuario_id)
+
+    secciones = [
+        ("📝 Últimas notas creadas", notas_creadas, "nota"),
+        ("📁 Últimas carpetas creadas", carpetas_creadas, "carpeta"),
+        ("✏️ Últimas notas modificadas", notas_modificadas, "nota")
+    ]
+
+    for titulo_sec, datos, tipo in secciones:
+        frame_sec = ctk.CTkFrame(frame_editor, fg_color="#F9F6FF", corner_radius=12)
+        frame_sec.pack(fill="x", pady=10, padx=10)
+
+        ctk.CTkLabel(
+            frame_sec,
+            text=titulo_sec,
+            font=ctk.CTkFont(size=18, weight="bold"),
+            text_color="#333"
+        ).pack(anchor="w", padx=10, pady=5)
+
+        if not datos:
+            ctk.CTkLabel(frame_sec, text="(Sin registros recientes)", text_color="#888").pack(pady=5)
+            continue
+
+        for item in datos:
+            item_id, nombre, fecha = item
+            fecha_txt = fecha.strftime("%d/%m/%Y %H:%M") if fecha else "(sin fecha)"
+
+            fila = ctk.CTkFrame(frame_sec, fg_color="white", corner_radius=8)
+            fila.pack(fill="x", pady=4, padx=15)
+
+            btn_item = ctk.CTkButton(
+                fila,
+                text=f"{nombre} — {fecha_txt}",
+                anchor="w",
+                fg_color="transparent",
+                hover_color="#EDE7F6",
+                text_color="#333",
+                font=ctk.CTkFont(size=14),
+
+            )
+            btn_item.pack(side="left", fill="x", expand=True, padx=(5, 0), pady=2)
+            
+            btn_menu = ctk.CTkButton(
+                fila,
+                text="⋮",
+                width=25,
+                fg_color="transparent",
+                hover_color="#EEE",
+                text_color="#555",
+            )
+            btn_menu.pack(side="right", padx=5)
+
+
+
+
 # PANEL DERECHO (calendario, temporizador, sonidos) 
 sidebar_derecho = ctk.CTkFrame(ventana, width=250, corner_radius=0, fg_color="white")
 sidebar_derecho.grid(row=0, column=2, sticky="ns")
@@ -654,158 +727,24 @@ def dibujar_calendario(frame, mes, anio):
 
 dibujar_calendario(calendario_frame, mes_actual, anio_actual)
 
-# === TEMPORIZADOR (mejorado) ===
-# === TEMPORIZADOR (configuración integrada sin frase) ===
-titulo_temporizador = ctk.CTkLabel(
-    sidebar_derecho,
-    text="Temporizador",
-    font=ctk.CTkFont(size=18, weight="bold", family="Comic Sans MS"),
-    text_color="#333333"
-)
+# temporizador (UI)
+titulo_temporizador = ctk.CTkLabel(sidebar_derecho, text="Temporizador", font=ctk.CTkFont(size=18, weight="bold", family="Comic Sans MS"), text_color="#333333")
 titulo_temporizador.pack(pady=(10, 0))
 
-temporizador_frame = ctk.CTkFrame(
-    sidebar_derecho,
-    fg_color="#EBF2B6",
-    corner_radius=15,
-    width=240,
-    height=150
-)
+temporizador_frame = ctk.CTkFrame(sidebar_derecho, fg_color="#EBF2B6", corner_radius=15, width=240, height=120)
 temporizador_frame.pack(padx=5, pady=1)
 temporizador_frame.pack_propagate(False)
 
-# Variables globales
-tiempo_total = 1500
-tiempo_restante = tiempo_total
-temporizador_activo = False
+ctk.CTkLabel(temporizador_frame, text="00:00", font=ctk.CTkFont(size=34, weight="bold"), text_color="#A3B044").pack(pady=(8, 0))
 
-# Etiqueta principal
-label_tiempo = ctk.CTkLabel(
-    temporizador_frame,
-    text="25:00",
-    font=ctk.CTkFont(size=34, weight="bold"),
-    text_color="#A3B044"
-)
-label_tiempo.pack(pady=(8, 0))
+ctk.CTkLabel(temporizador_frame, text="¡Hora de enfocarse!", font=ctk.CTkFont(size=12), text_color="#333333").pack(pady=(0, 5))
 
-mensaje_label = ctk.CTkLabel(
-    temporizador_frame,
-    text="¡Hora de enfocarse!",
-    font=ctk.CTkFont(size=12),
-    text_color="#333333"
-)
-mensaje_label.pack(pady=(0, 5))
-
-# --- Lógica del temporizador ---
-def formatear_tiempo(segundos):
-    m, s = divmod(segundos, 60)
-    return f"{m:02d}:{s:02d}"
-
-def actualizar():
-    global tiempo_restante, temporizador_activo
-    if temporizador_activo and tiempo_restante > 0:
-        tiempo_restante -= 1
-        label_tiempo.configure(text=formatear_tiempo(tiempo_restante))
-        ventana.after(1000, actualizar)
-    elif tiempo_restante <= 0:
-        temporizador_activo = False
-        label_tiempo.configure(text="00:00")
-        mensaje_label.configure(text="¡Tiempo terminado!")
-
-def iniciar():
-    global temporizador_activo
-    if not temporizador_activo:
-        temporizador_activo = True
-        mensaje_label.configure(text="En progreso...")
-        actualizar()
-
-def pausar():
-    global temporizador_activo
-    temporizador_activo = False
-    mensaje_label.configure(text="Pausado")
-
-def reiniciar():
-    global tiempo_restante, temporizador_activo
-    temporizador_activo = False
-    tiempo_restante = tiempo_total
-    label_tiempo.configure(text=formatear_tiempo(tiempo_total))
-    mensaje_label.configure(text="¡Hora de enfocarse!")
-
-# --- Pantalla integrada para configurar tiempo ---
-def mostrar_temporizador_config():
-    global frame_editor
-    if frame_editor:
-        frame_editor.destroy()
-
-    frame_editor = ctk.CTkFrame(contenido, fg_color="white")
-    frame_editor.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
-
-    ctk.CTkLabel(
-        frame_editor,
-        text="⚙️ Configurar Temporizador",
-        font=ctk.CTkFont(size=18, weight="bold"),
-        text_color="#4A148C"
-    ).pack(pady=(10, 10))
-
-    form = ctk.CTkFrame(frame_editor, fg_color="transparent")
-    form.pack(pady=10)
-
-    ctk.CTkLabel(form, text="Duración (minutos):", text_color="#333333").grid(row=0, column=0, padx=(0,5), pady=5)
-    entrada_min = ctk.CTkEntry(form, width=120, justify="center")
-    entrada_min.insert(0, str(tiempo_total // 60))
-    entrada_min.grid(row=0, column=1, pady=5)
-
-    botones = ctk.CTkFrame(frame_editor, fg_color="transparent")
-    botones.pack(pady=10)
-
-    def guardar():
-        global tiempo_total, tiempo_restante
-        try:
-            minutos = int(entrada_min.get())
-            tiempo_total = minutos * 60
-            tiempo_restante = tiempo_total
-            label_tiempo.configure(text=formatear_tiempo(tiempo_total))
-            mensaje_label.configure(text="¡Hora de enfocarse!")
-            frame_editor.destroy()
-        except ValueError:
-            messagebox.showwarning("Error", "Por favor ingresa un número válido.")
-
-    def cancelar():
-        frame_editor.destroy()
-
-    ctk.CTkButton(
-        botones, text="✔ Guardar",
-        fg_color="#B99AD9", text_color="white",
-        corner_radius=8, width=90,
-        command=guardar
-    ).pack(side="left", padx=5)
-
-    ctk.CTkButton(
-        botones, text="✖ Cancelar",
-        fg_color="#F44336", text_color="white",
-        corner_radius=8, width=90,
-        command=cancelar
-    ).pack(side="left", padx=5)
-
-# --- Botones del temporizador ---
 bf = ctk.CTkFrame(temporizador_frame, fg_color="transparent")
 bf.pack(pady=4)
-
-ctk.CTkButton(bf, text="▶ Iniciar", width=75, height=28,
-              fg_color="#B99AD9", text_color="white",
-              command=iniciar).grid(row=0, column=0, padx=2)
-
-ctk.CTkButton(bf, text="⏸", width=32, height=28,
-              fg_color="#F4F4F4", text_color="#333333",
-              command=pausar).grid(row=0, column=1, padx=2)
-
-ctk.CTkButton(bf, text="↻", width=32, height=28,
-              fg_color="#F4F4F4", text_color="#333333",
-              command=reiniciar).grid(row=0, column=2, padx=2)
-
-ctk.CTkButton(bf, text="⚙", width=32, height=28,
-              fg_color="#F4F4F4", text_color="#333333",
-              command=mostrar_temporizador_config).grid(row=0, column=3, padx=2)
+ctk.CTkButton(bf, text="Iniciar", width=75, height=28, fg_color="#B99AD9", text_color="white").grid(row=0, column=0, padx=2)
+ctk.CTkButton(bf, text="⏸", width=32, height=28, fg_color="#F4F4F4", text_color="#333333").grid(row=0, column=1, padx=2)
+ctk.CTkButton(bf, text="↻", width=32, height=28, fg_color="#F4F4F4", text_color="#333333").grid(row=0, column=2, padx=2)
+ctk.CTkButton(bf, text="⚙", width=32, height=28, fg_color="#F4F4F4", text_color="#333333").grid(row=0, column=3, padx=2)
 
 # sonidos (UI)
 pygame.mixer.init()
@@ -857,185 +796,6 @@ agregar_sonido("Naturaleza", "#EBF2B6", "#A3B044")
 agregar_sonido("Rio", "#EBF2B6", "#A3B044")
 agregar_sonido("Jazz", "#EBF2B6", "#A3B044")
 agregar_sonido("Meditación", "#EBF2B6", "#A3B044")
-
-# === SECCIÓN DE RECORDATORIOS ===
-frame_recordatorios = ctk.CTkFrame(scroll_secciones, fg_color="#F8F5FB", corner_radius=12)
-frame_recordatorios.pack(fill="x", padx=8, pady=(20, 10))
-
-titulo_rec = ctk.CTkLabel(
-    frame_recordatorios,
-    text="⏰ Recordatorios",
-    font=ctk.CTkFont(size=15, weight="bold"),
-    text_color="#5A189A"
-)
-titulo_rec.pack(anchor="w", padx=12, pady=(8, 6))
-
-# Contenedor de lista
-lista_recordatorios = ctk.CTkFrame(frame_recordatorios, fg_color="#FFFFFF", corner_radius=8)
-lista_recordatorios.pack(fill="x", padx=10, pady=(0, 10))
-
-recordatorios = []  # temporal
-
-def cargar_recordatorios():
-    for widget in lista_recordatorios.winfo_children():
-        widget.destroy()
-
-    if not recordatorios:
-        ctk.CTkLabel(
-            lista_recordatorios,
-            text="(sin recordatorios)",
-            text_color="#888888",
-            font=ctk.CTkFont(size=13, slant="italic")
-        ).pack(pady=5)
-        return
-
-    for idx, (texto, fecha) in enumerate(recordatorios):
-        item = ctk.CTkFrame(lista_recordatorios, fg_color="#F6F0FF", corner_radius=6)
-        item.pack(fill="x", pady=3, padx=5)
-
-        # Botón que abre el recordatorio en el panel central
-        btn_rec = ctk.CTkButton(
-            item,
-            text=f"📅 {texto} — {fecha}",
-            fg_color="#F6F0FF",
-            hover_color="#E9DFFF",
-            text_color="#333333",
-            anchor="w",
-            command=lambda i=idx: mostrar_recordatorio(i)
-        )
-        btn_rec.pack(fill="x", padx=5, pady=3)
-
-        # Botón eliminar
-        btn_borrar = ctk.CTkButton(
-            item, text="✖", width=25,
-            fg_color="transparent", text_color="#D32F2F",
-            hover_color="#FCE4EC",
-            command=lambda i=idx: eliminar_recordatorio(i)
-        )
-        btn_borrar.pack(side="right", padx=5)
-
-def eliminar_recordatorio(idx):
-    del recordatorios[idx]
-    cargar_recordatorios()
-
-# --- Botón inferior para crear nuevo recordatorio ---
-def agregar_recordatorio():
-    recordatorios.append(("Nuevo", "Sin fecha"))
-    cargar_recordatorios()
-
-btn_agregar_rec = ctk.CTkButton(
-    frame_recordatorios,
-    text="+ Agregar recordatorio",
-    fg_color="#B99AD9",
-    text_color="white",
-    hover_color="#A57CC7",
-    corner_radius=8,
-    command=agregar_recordatorio
-)
-btn_agregar_rec.pack(pady=(0, 10))
-
-cargar_recordatorios()
-
-def mostrar_recordatorio(idx):
-    global frame_editor
-    if frame_editor:
-        frame_editor.destroy()
-
-    texto, fecha = recordatorios[idx]
-
-    frame_editor = ctk.CTkFrame(contenido, fg_color="white")
-    frame_editor.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
-
-    ctk.CTkLabel(
-        frame_editor,
-        text="🕒 Editar Recordatorio",
-        font=ctk.CTkFont(size=18, weight="bold"),
-        text_color="#4A148C"
-    ).pack(pady=(10, 10))
-
-    # Contenedor centrado
-    form = ctk.CTkFrame(frame_editor, fg_color="transparent")
-    form.pack(pady=10)
-
-    # --- Nombre del recordatorio ---
-    ctk.CTkLabel(form, text="Nombre:", text_color="#333333").grid(row=0, column=0, padx=(0,5), pady=5)
-    entrada_texto = ctk.CTkEntry(form, width=220)
-    entrada_texto.insert(0, texto)
-    entrada_texto.grid(row=0, column=1, pady=5)
-
-    # --- Selector de fecha ---
-    ctk.CTkLabel(form, text="Fecha:", text_color="#333333").grid(row=1, column=0, padx=(0,5), pady=5)
-
-    from tkcalendar import DateEntry
-    import tkinter as tk
-    from datetime import datetime
-
-    frame_fecha = tk.Frame(form)
-    frame_fecha.grid(row=1, column=1, pady=5, sticky="w")
-
-    selector_fecha = DateEntry(
-        frame_fecha,
-        width=10,
-        background="#B99AD9",
-        foreground="white",
-        borderwidth=1,
-        date_pattern="dd/mm/yyyy"
-    )
-    selector_fecha.pack(side="left")
-
-    # --- Selector de hora ---
-    horas = [f"{h:02d}" for h in range(0, 24)]
-    minutos = [f"{m:02d}" for m in range(0, 60, 5)]  # saltos de 5 min
-    hora_var = tk.StringVar(value="12")
-    min_var = tk.StringVar(value="00")
-
-    hora_menu = ctk.CTkOptionMenu(frame_fecha, values=horas, variable=hora_var, width=55)
-    hora_menu.pack(side="left", padx=(10, 2))
-    min_menu = ctk.CTkOptionMenu(frame_fecha, values=minutos, variable=min_var, width=55)
-    min_menu.pack(side="left")
-
-    # Cargar la fecha si ya existe
-    try:
-        if fecha.lower() != "sin fecha":
-            fecha_base = fecha.split(" ")[0]
-            selector_fecha.set_date(datetime.strptime(fecha_base, "%d/%m/%Y"))
-            if len(fecha.split()) > 1:
-                hora_str = fecha.split()[1]
-                if ":" in hora_str:
-                    h, m = hora_str.split(":")
-                    hora_var.set(h)
-                    min_var.set(m)
-    except:
-        pass
-
-    # --- Botones ---
-    botones = ctk.CTkFrame(frame_editor, fg_color="transparent")
-    botones.pack(pady=10)
-
-    def guardar():
-        nuevo_texto = entrada_texto.get().strip() or "Sin título"
-        nueva_fecha = selector_fecha.get_date().strftime("%d/%m/%Y")
-        nueva_hora = f"{hora_var.get()}:{min_var.get()}"
-        recordatorios[idx] = (nuevo_texto, f"{nueva_fecha} {nueva_hora}")
-        cargar_recordatorios()
-        frame_editor.destroy()
-
-    def cancelar():
-        frame_editor.destroy()
-
-    ctk.CTkButton(
-        botones, text="✔ Guardar",
-        fg_color="#B99AD9", text_color="white",
-        corner_radius=8, width=90,
-        command=guardar
-    ).pack(side="left", padx=5)
-
-    ctk.CTkButton(
-        botones, text="✖ Cancelar",
-        fg_color="#F44336", text_color="white",
-        corner_radius=8, width=90,
-        command=cancelar
-    ).pack(side="left", padx=5)
 
 # PANEL CENTRAL
 panel_central = ctk.CTkFrame(ventana, fg_color="transparent")
@@ -1095,6 +855,9 @@ def seleccionar_boton(nombre_boton):
         btn_accion.pack(fill="x", pady=10, padx=5)
         btn_accion.configure(text="+ Agregar carpeta", command=nueva_carpeta)
         cargar_carpetas()
+    
+    elif nombre_boton == "Tablero":
+        mostrar_tablero()
 
     else:
         btn_accion.pack_forget()

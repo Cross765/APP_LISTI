@@ -64,16 +64,13 @@ def listar_notas(usuario_id: int):
     WHERE usuario_id = %s AND carpeta_id IS NULL
     ORDER BY fecha_modificacion DESC, id DESC;
     """
-    conn = None
-    cur = None
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute(sql, (usuario_id,))
-        return cur.fetchall()
-    finally:
-        if cur: cur.close()
-        if conn: conn.close()
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(sql, (usuario_id,))
+    data = cur.fetchall()
+    cur.close()
+    conn.close()
+    return data
 
 def listar_notas_en_carpeta(carpeta_id: int):
     sql = """
@@ -82,30 +79,25 @@ def listar_notas_en_carpeta(carpeta_id: int):
     WHERE carpeta_id = %s
     ORDER BY fecha_modificacion DESC, id DESC;
     """
-    conn = None
-    cur = None
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute(sql, (carpeta_id,))
-        return cur.fetchall()
-    finally:
-        if cur: cur.close()
-        if conn: conn.close()
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(sql, (carpeta_id,))
+    data = cur.fetchall()
+    cur.close()
+    conn.close()
+    return data
 
 def traer_nota(nota_id: int):
     sql = "SELECT titulo, contenido FROM notas WHERE id = %s;"
-    conn = None
-    cur = None
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute(sql, (nota_id,))
-        row = cur.fetchone()
-        return (row[0], row[1]) if row else None
-    finally:
-        if cur: cur.close()
-        if conn: conn.close()
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(sql, (nota_id,))
+    row = cur.fetchone()
+    cur.execute("UPDATE notas SET fecha_uso = NOW() WHERE id = %s;", (nota_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    return (row[0], row[1]) if row else None
 
 def actualizar_nota(nota_id: int, contenido: str):
     sql = """
@@ -113,16 +105,12 @@ def actualizar_nota(nota_id: int, contenido: str):
     SET contenido = %s, fecha_modificacion = NOW()
     WHERE id = %s;
     """
-    conn = None
-    cur = None
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute(sql, (contenido, nota_id))
-        conn.commit()
-    finally:
-        if cur: cur.close()
-        if conn: conn.close()
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(sql, (contenido, nota_id))
+    conn.commit()
+    cur.close()
+    conn.close()
 
 def renombrar_note(nota_id: int, nuevo_titulo: str):
     sql = """
@@ -130,29 +118,20 @@ def renombrar_note(nota_id: int, nuevo_titulo: str):
     SET titulo = %s, fecha_modificacion = NOW()
     WHERE id = %s;
     """
-    conn = None
-    cur = None
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute(sql, (nuevo_titulo, nota_id))
-        conn.commit()
-    finally:
-        if cur: cur.close()
-        if conn: conn.close()
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(sql, (nuevo_titulo, nota_id))
+    conn.commit()
+    cur.close()
+    conn.close()
 
 def borrar_note(nota_id: int):
-    sql = "DELETE FROM notas WHERE id = %s;"
-    conn = None
-    cur = None
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute(sql, (nota_id,))
-        conn.commit()
-    finally:
-        if cur: cur.close()
-        if conn: conn.close()
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM notas WHERE id = %s;", (nota_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
 
 def mover_nota(nota_id: int, carpeta_id: int):
     sql = """
@@ -160,16 +139,12 @@ def mover_nota(nota_id: int, carpeta_id: int):
     SET carpeta_id = %s, fecha_modificacion = NOW()
     WHERE id = %s;
     """
-    conn = None
-    cur = None
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute(sql, (carpeta_id, nota_id))
-        conn.commit()
-    finally:
-        if cur: cur.close()
-        if conn: conn.close()
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(sql, (carpeta_id, nota_id))
+    conn.commit()
+    cur.close()
+    conn.close()
 
 def quitar_de_carpeta(nota_id: int):
     sql = """
@@ -177,16 +152,12 @@ def quitar_de_carpeta(nota_id: int):
     SET carpeta_id = NULL, fecha_modificacion = NOW()
     WHERE id = %s;
     """
-    conn = None
-    cur = None
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute(sql, (nota_id,))
-        conn.commit()
-    finally:
-        if cur: cur.close()
-        if conn: conn.close()
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(sql, (nota_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
 
 ##### carpetas #####
 def crear_carpeta(usuario_id: int, nombre: str) -> int:
@@ -195,18 +166,14 @@ def crear_carpeta(usuario_id: int, nombre: str) -> int:
     VALUES (%s, %s)
     RETURNING id;
     """
-    conn = None
-    cur = None
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute(sql, (usuario_id, nombre))
-        new_id = cur.fetchone()[0]
-        conn.commit()
-        return new_id
-    finally:
-        if cur: cur.close()
-        if conn: conn.close()
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(sql, (usuario_id, nombre))
+    new_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+    conn.close()
+    return new_id
 
 def listar_carpetas(usuario_id: int):
     sql = """
@@ -215,57 +182,85 @@ def listar_carpetas(usuario_id: int):
     WHERE usuario_id = %s
     ORDER BY fecha_creacion DESC, id DESC;
     """
-    conn = None
-    cur = None
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute(sql, (usuario_id,))
-        return cur.fetchall()
-    finally:
-        if cur: cur.close()
-        if conn: conn.close()   
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(sql, (usuario_id,))
+    data = cur.fetchall()
+    cur.close()
+    conn.close()
+    return data
 
 def traer_carpeta(carpeta_id: int):
     sql = "SELECT nombre, fecha_creacion FROM carpetas WHERE id = %s;"
-    conn = None
-    cur = None
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute(sql, (carpeta_id,))
-        row = cur.fetchone()
-        return (row[0], row[1]) if row else None
-    finally:
-        if cur: cur.close()
-        if conn: conn.close()
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(sql, (carpeta_id,))
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+    return (row[0], row[1]) if row else None
 
 def renombrar_carpeta(carpeta_id: int, nuevo_nombre: str):
-    sql = """
-    UPDATE carpetas
-    SET nombre = %s
-    WHERE id = %s;
-    """
-    conn = None
-    cur = None
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute(sql, (nuevo_nombre, carpeta_id))
-        conn.commit()
-    finally:
-        if cur: cur.close()
-        if conn: conn.close()
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("UPDATE carpetas SET nombre = %s WHERE id = %s;", (nuevo_nombre, carpeta_id))
+    conn.commit()
+    cur.close()
+    conn.close()
 
 def borrar_carpeta(carpeta_id: int):
-    sql = "DELETE FROM carpetas WHERE id = %s;"
-    conn = None
-    cur = None
-    try:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute(sql, (carpeta_id,))
-        conn.commit()
-    finally:
-        if cur: cur.close()
-        if conn: conn.close()
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM carpetas WHERE id = %s;", (carpeta_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+
+##### dashboard #####
+def obtener_ultimas_notas_creadas(usuario_id: int, limite: int = 4):
+    sql = """
+    SELECT id, titulo, fecha_creacion
+    FROM notas
+    WHERE usuario_id = %s
+    ORDER BY fecha_creacion DESC
+    LIMIT %s;
+    """
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(sql, (usuario_id, limite))
+    data = cur.fetchall()
+    cur.close()
+    conn.close()
+    return data
+
+def obtener_ultimas_carpetas_creadas(usuario_id: int, limite: int = 4):
+    sql = """
+    SELECT id, nombre, fecha_creacion
+    FROM carpetas
+    WHERE usuario_id = %s
+    ORDER BY fecha_creacion DESC
+    LIMIT %s;
+    """
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(sql, (usuario_id, limite))
+    data = cur.fetchall()
+    cur.close()
+    conn.close()
+    return data
+
+def obtener_ultimas_notas_modificadas(usuario_id: int, limite: int = 4):
+    sql = """
+    SELECT id, titulo, fecha_modificacion
+    FROM notas
+    WHERE usuario_id = %s
+    ORDER BY fecha_modificacion DESC
+    LIMIT %s;
+    """
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(sql, (usuario_id, limite))
+    data = cur.fetchall()
+    cur.close()
+    conn.close()
+    return data
