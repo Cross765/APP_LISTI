@@ -727,24 +727,154 @@ def dibujar_calendario(frame, mes, anio):
 
 dibujar_calendario(calendario_frame, mes_actual, anio_actual)
 
-# temporizador (UI)
-titulo_temporizador = ctk.CTkLabel(sidebar_derecho, text="Temporizador", font=ctk.CTkFont(size=18, weight="bold", family="Comic Sans MS"), text_color="#333333")
+# TEMPORIZADOR 
+titulo_temporizador = ctk.CTkLabel(
+    sidebar_derecho,
+    text="Temporizador",
+    font=ctk.CTkFont(size=18, weight="bold", family="Comic Sans MS"),
+    text_color="#333333"
+)
 titulo_temporizador.pack(pady=(10, 0))
 
-temporizador_frame = ctk.CTkFrame(sidebar_derecho, fg_color="#EBF2B6", corner_radius=15, width=240, height=120)
+temporizador_frame = ctk.CTkFrame(
+    sidebar_derecho,
+    fg_color="#EBF2B6",
+    corner_radius=15,
+    width=240,
+    height=150
+)
 temporizador_frame.pack(padx=5, pady=1)
 temporizador_frame.pack_propagate(False)
 
-ctk.CTkLabel(temporizador_frame, text="00:00", font=ctk.CTkFont(size=34, weight="bold"), text_color="#A3B044").pack(pady=(8, 0))
+tiempo_total = 1500
+tiempo_restante = tiempo_total
+temporizador_activo = False
 
-ctk.CTkLabel(temporizador_frame, text="¡Hora de enfocarse!", font=ctk.CTkFont(size=12), text_color="#333333").pack(pady=(0, 5))
+label_tiempo = ctk.CTkLabel(
+    temporizador_frame,
+    text="25:00",
+    font=ctk.CTkFont(size=34, weight="bold"),
+    text_color="#A3B044"
+)
+label_tiempo.pack(pady=(8, 0))
 
+mensaje_label = ctk.CTkLabel(
+    temporizador_frame,
+    text="¡Hora de enfocarse!",
+    font=ctk.CTkFont(size=12),
+    text_color="#333333"
+)
+mensaje_label.pack(pady=(0, 5))
+
+def formatear_tiempo(segundos):
+    m, s = divmod(segundos, 60)
+    return f"{m:02d}:{s:02d}"
+
+def actualizar():
+    global tiempo_restante, temporizador_activo
+    if temporizador_activo and tiempo_restante > 0:
+        tiempo_restante -= 1
+        label_tiempo.configure(text=formatear_tiempo(tiempo_restante))
+        ventana.after(1000, actualizar)
+    elif tiempo_restante <= 0:
+        temporizador_activo = False
+        label_tiempo.configure(text="00:00")
+        mensaje_label.configure(text="¡Tiempo terminado!")
+
+def iniciar():
+    global temporizador_activo
+    if not temporizador_activo:
+        temporizador_activo = True
+        mensaje_label.configure(text="En progreso...")
+        actualizar()
+
+def pausar():
+    global temporizador_activo
+    temporizador_activo = False
+    mensaje_label.configure(text="Pausado")
+
+def reiniciar():
+    global tiempo_restante, temporizador_activo
+    temporizador_activo = False
+    tiempo_restante = tiempo_total
+    label_tiempo.configure(text=formatear_tiempo(tiempo_total))
+    mensaje_label.configure(text="¡Hora de enfocarse!")
+
+def mostrar_temporizador_config():
+    global frame_editor
+    if frame_editor:
+        frame_editor.destroy()
+
+    frame_editor = ctk.CTkFrame(contenido, fg_color="white")
+    frame_editor.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+
+    ctk.CTkLabel(
+        frame_editor,
+        text="⚙️ Configurar Temporizador",
+        font=ctk.CTkFont(size=18, weight="bold"),
+        text_color="#4A148C"
+    ).pack(pady=(10, 10))
+
+    form = ctk.CTkFrame(frame_editor, fg_color="transparent")
+    form.pack(pady=10)
+
+    ctk.CTkLabel(form, text="Duración (minutos):", text_color="#333333").grid(row=0, column=0, padx=(0,5), pady=5)
+    entrada_min = ctk.CTkEntry(form, width=120, justify="center")
+    entrada_min.insert(0, str(tiempo_total // 60))
+    entrada_min.grid(row=0, column=1, pady=5)
+
+    botones = ctk.CTkFrame(frame_editor, fg_color="transparent")
+    botones.pack(pady=10)
+
+    def guardar():
+        global tiempo_total, tiempo_restante
+        try:
+            minutos = int(entrada_min.get())
+            tiempo_total = minutos * 60
+            tiempo_restante = tiempo_total
+            label_tiempo.configure(text=formatear_tiempo(tiempo_total))
+            mensaje_label.configure(text="¡Hora de enfocarse!")
+            frame_editor.destroy()
+        except ValueError:
+            messagebox.showwarning("Error", "Por favor ingresa un número válido.")
+
+    def cancelar():
+        frame_editor.destroy()
+
+    ctk.CTkButton(
+        botones, text="✔ Guardar",
+        fg_color="#B99AD9", text_color="white",
+        corner_radius=8, width=90,
+        command=guardar
+    ).pack(side="left", padx=5)
+
+    ctk.CTkButton(
+        botones, text="✖ Cancelar",
+        fg_color="#F44336", text_color="white",
+        corner_radius=8, width=90,
+        command=cancelar
+    ).pack(side="left", padx=5)
+
+# Botones del temporizador 
 bf = ctk.CTkFrame(temporizador_frame, fg_color="transparent")
 bf.pack(pady=4)
-ctk.CTkButton(bf, text="Iniciar", width=75, height=28, fg_color="#B99AD9", text_color="white").grid(row=0, column=0, padx=2)
-ctk.CTkButton(bf, text="⏸", width=32, height=28, fg_color="#F4F4F4", text_color="#333333").grid(row=0, column=1, padx=2)
-ctk.CTkButton(bf, text="↻", width=32, height=28, fg_color="#F4F4F4", text_color="#333333").grid(row=0, column=2, padx=2)
-ctk.CTkButton(bf, text="⚙", width=32, height=28, fg_color="#F4F4F4", text_color="#333333").grid(row=0, column=3, padx=2)
+
+ctk.CTkButton(bf, text="▶ Iniciar", width=75, height=28,
+              fg_color="#B99AD9", text_color="white",
+              command=iniciar).grid(row=0, column=0, padx=2)
+
+ctk.CTkButton(bf, text="⏸", width=32, height=28,
+              fg_color="#F4F4F4", text_color="#333333",
+              command=pausar).grid(row=0, column=1, padx=2)
+
+ctk.CTkButton(bf, text="↻", width=32, height=28,
+              fg_color="#F4F4F4", text_color="#333333",
+              command=reiniciar).grid(row=0, column=2, padx=2)
+
+ctk.CTkButton(bf, text="⚙", width=32, height=28,
+              fg_color="#F4F4F4", text_color="#333333",
+              command=mostrar_temporizador_config).grid(row=0, column=3, padx=2)
+
 
 # sonidos (UI)
 pygame.mixer.init()
