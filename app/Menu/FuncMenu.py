@@ -21,7 +21,7 @@ def get_conn():
         dbname=DB_NAME,
         user=DB_USER,
         password=DB_PASS,
-        sslmode="require",
+        sslmode="require"
     )
 
 def obtener_usuario(nombre_usuario: str):
@@ -39,11 +39,7 @@ def obtener_usuario(nombre_usuario: str):
 
 ##### notas #####
 def crear_note(usuario_id: int, titulo: str) -> int:
-    sql = """
-    INSERT INTO notas (usuario_id, titulo, contenido)
-    VALUES (%s, %s, %s)
-    RETURNING id;
-    """
+    sql = """INSERT INTO notas (usuario_id, titulo, contenido) VALUES (%s, %s, %s) RETURNING id; """
     conn = None
     cur = None
     try:
@@ -58,12 +54,7 @@ def crear_note(usuario_id: int, titulo: str) -> int:
         if conn: conn.close()
 
 def listar_notas(usuario_id: int):
-    sql = """
-    SELECT id, titulo
-    FROM notas
-    WHERE usuario_id = %s AND carpeta_id IS NULL
-    ORDER BY fecha_modificacion DESC, id DESC;
-    """
+    sql = """ SELECT id, titulo FROM notas WHERE usuario_id = %s AND carpeta_id IS NULL ORDER BY fecha_modificacion DESC, id DESC; """
     conn = get_conn()
     cur = conn.cursor()
     cur.execute(sql, (usuario_id,))

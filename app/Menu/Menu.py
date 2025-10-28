@@ -10,6 +10,7 @@ from tkinter import simpledialog
 import tkinter as tk
 from tkinter import colorchooser
 import pygame
+from tkcalendar import DateEntry
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("green")
@@ -48,13 +49,7 @@ if img_titulo:
 titulo_sidebar = ctk.CTkLabel(sidebar, image=img_titulo, text="", font=ctk.CTkFont(size=20, weight="bold"), text_color="#333333")
 titulo_sidebar.pack(pady=(10, 5))
 
-scroll_secciones = ctk.CTkScrollableFrame(
-    sidebar,
-    width=220,
-    fg_color="transparent",
-    scrollbar_button_color="#DADADA",
-    scrollbar_button_hover_color="#CCCCCC"
-)
+scroll_secciones = ctk.CTkScrollableFrame(sidebar, width=220, fg_color="transparent", scrollbar_button_color="#DADADA", scrollbar_button_hover_color="#CCCCCC")
 scroll_secciones.pack(fill="both", expand=True, padx=5, pady=(10, 5))
 
 colores_secciones = ["#FFC107", "#4CAF50", "#F44336", "#9C27B0", "#03A9F4", "#FF9800", "#E91E63", "#673AB7"]
@@ -90,16 +85,7 @@ def cargar_notas():
         icono = ctk.CTkLabel(frame, text="▎", text_color=color, font=ctk.CTkFont(size=20))
         icono.pack(side="left", padx=(5, 8))
 
-        btn_nota = ctk.CTkButton(
-            frame,
-            text=titulo,
-            text_color="#333333",
-            font=ctk.CTkFont(size=14),
-            fg_color="transparent",
-            hover_color="#E0D4EF",
-            anchor="w",
-            command=lambda n=nid: mostrar_nota(n)
-        )
+        btn_nota = ctk.CTkButton( frame, text=titulo, text_color="#333333", font=ctk.CTkFont(size=14), fg_color="transparent", hover_color="#E0D4EF", anchor="w", command=lambda n=nid: mostrar_nota(n))
         btn_nota.pack(side="left", pady=2, fill="x", expand=True)
 
         # BOTÓN DE 3 PUNTITOS 
@@ -174,15 +160,7 @@ def cargar_notas():
             menu.bind("<FocusOut>", lambda e: menu.destroy())
             menu.focus_force()
 
-        btn_menu = ctk.CTkButton(
-            frame,
-            text="⋮",
-            width=25,
-            fg_color="transparent",
-            text_color="#666666",
-            hover_color="#D1B6F1",
-            command=lambda n=nid, p=frame: abrir_menu(n, p)
-        )
+        btn_menu = ctk.CTkButton(frame, text="⋮", width=25, fg_color="transparent", text_color="#666666", hover_color="#D1B6F1", command=lambda n=nid, p=frame: abrir_menu(n, p))
         btn_menu.pack(side="right", padx=5)
 
         notas_widgets[nid] = (frame, btn_nota, btn_menu)
@@ -196,20 +174,11 @@ def nueva_nota():
     frame_editor.grid(row=0, column=0, sticky="nsew", padx=15, pady=15)
 
     # Título
-    titulo = ctk.CTkLabel(
-        frame_editor,
-        text="📒 Nueva Nota",
-        font=ctk.CTkFont(size=18, weight="bold"),
-        text_color="#4A148C"
-    )
+    titulo = ctk.CTkLabel(frame_editor, text="📒 Nueva Nota", font=ctk.CTkFont(size=18, weight="bold"), text_color="#4A148C")
     titulo.pack(pady=(10, 8))
 
     # Entrada de texto
-    entrada = ctk.CTkEntry(
-        frame_editor,
-        width=400,
-        placeholder_text="Escribe el título de tu nota..."
-    )
+    entrada = ctk.CTkEntry(frame_editor, width=400, placeholder_text="Escribe el título de tu nota...")
     entrada.pack(pady=10, padx=10)
     entrada.focus()
 
@@ -220,16 +189,10 @@ def nueva_nota():
     botones = ctk.CTkFrame(frame_editor, fg_color="transparent")
     botones.pack(pady=10)
 
-    btn_crear = ctk.CTkButton(
-        botones, text="✔ Crear", fg_color="#B99AD9", text_color="white",
-        corner_radius=8, width=100
-    )
+    btn_crear = ctk.CTkButton(botones, text="✔ Crear", fg_color="#B99AD9", text_color="white",corner_radius=8, width=100)
     btn_crear.pack(side="left", padx=10)
 
-    btn_cancelar = ctk.CTkButton(
-        botones, text="✖ Cancelar", fg_color="#F44336", text_color="white",
-        corner_radius=8, width=100
-    )
+    btn_cancelar = ctk.CTkButton(botones, text="✖ Cancelar", fg_color="#F44336", text_color="white", corner_radius=8, width=100)
     btn_cancelar.pack(side="left", padx=10)
 
     # Funciones
@@ -665,10 +628,8 @@ def mostrar_tablero():
             btn_menu.pack(side="right", padx=5)
 
 
-
-
 # PANEL DERECHO (calendario, temporizador, sonidos) 
-sidebar_derecho = ctk.CTkFrame(ventana, width=250, corner_radius=0, fg_color="white")
+sidebar_derecho = ctk.CTkScrollableFrame(ventana, width=250, corner_radius=0, fg_color="white")
 sidebar_derecho.grid(row=0, column=2, sticky="ns")
 
 # calendario
@@ -926,6 +887,167 @@ agregar_sonido("Naturaleza", "#EBF2B6", "#A3B044")
 agregar_sonido("Rio", "#EBF2B6", "#A3B044")
 agregar_sonido("Jazz", "#EBF2B6", "#A3B044")
 agregar_sonido("Meditación", "#EBF2B6", "#A3B044")
+
+# === SECCIÓN DE RECORDATORIOS ===
+frame_recordatorios = ctk.CTkFrame(sidebar_derecho, fg_color="#F8F5FB", corner_radius=12)
+frame_recordatorios.pack(fill="x", padx=8, pady=(20, 10))
+
+titulo_rec = ctk.CTkLabel(
+    frame_recordatorios,
+    text="⏰ Recordatorios",
+    font=ctk.CTkFont(size=15, weight="bold"),
+    text_color="#5A189A"
+)
+titulo_rec.pack(anchor="w", padx=12, pady=(8, 6))
+
+# Contenedor de lista
+lista_recordatorios = ctk.CTkFrame(frame_recordatorios, fg_color="#FFFFFF", corner_radius=8)
+lista_recordatorios.pack(fill="x", padx=10, pady=(0, 10))
+
+recordatorios = []  # temporal
+
+def cargar_recordatorios():
+    for widget in lista_recordatorios.winfo_children():
+        widget.destroy()
+
+    if not recordatorios:
+        ctk.CTkLabel(
+            lista_recordatorios,
+            text="(sin recordatorios)",
+            text_color="#888888",
+            font=ctk.CTkFont(size=13, slant="italic")
+        ).pack(pady=5)
+        return
+
+    for idx, (texto, fecha) in enumerate(recordatorios):
+        item = ctk.CTkFrame(lista_recordatorios, fg_color="#F6F0FF", corner_radius=6)
+        item.pack(fill="x", pady=3, padx=5)
+
+        btn_rec = ctk.CTkButton(
+            item,
+            text=f"📅 {texto} — {fecha}",
+            fg_color="#F6F0FF",
+            hover_color="#E9DFFF",
+            text_color="#333333",
+            anchor="w",
+            command=lambda i=idx: mostrar_recordatorio(i))
+        btn_rec.pack(fill="x", padx=5, pady=3)
+
+        btn_borrar = ctk.CTkButton(item, text="✖", width=25, fg_color="transparent", text_color="#D32F2F", hover_color="#FCE4EC", command=lambda i=idx: eliminar_recordatorio(i))
+        btn_borrar.pack(side="right", padx=5)
+
+def eliminar_recordatorio(idx):
+    del recordatorios[idx]
+    cargar_recordatorios()
+
+def agregar_recordatorio():
+    recordatorios.append(("Nuevo", "Sin fecha"))
+    cargar_recordatorios()
+
+btn_agregar_rec = ctk.CTkButton(frame_recordatorios,text="+ Agregar recordatorio", fg_color="#B99AD9", text_color="white", hover_color="#A57CC7", corner_radius=8, command=agregar_recordatorio)
+btn_agregar_rec.pack(pady=(0, 10))
+
+cargar_recordatorios()
+
+def mostrar_recordatorio(idx):
+    global frame_editor
+    if frame_editor:
+        frame_editor.destroy()
+
+    texto, fecha = recordatorios[idx]
+
+    frame_editor = ctk.CTkFrame(contenido, fg_color="white")
+    frame_editor.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+
+    ctk.CTkLabel(
+        frame_editor,
+        text="🕒 Editar Recordatorio",
+        font=ctk.CTkFont(size=18, weight="bold"),
+        text_color="#4A148C").pack(pady=(10, 10))
+
+    form = ctk.CTkFrame(frame_editor, fg_color="transparent")
+    form.pack(pady=10)
+
+    # Nombre del recordatorio 
+    ctk.CTkLabel(form, text="Nombre:", text_color="#333333").grid(row=0, column=0, padx=(0,5), pady=5)
+    entrada_texto = ctk.CTkEntry(form, width=220)
+    entrada_texto.insert(0, texto)
+    entrada_texto.grid(row=0, column=1, pady=5)
+
+    # Selector de fecha 
+    ctk.CTkLabel(form, text="Fecha:", text_color="#333333").grid(row=1, column=0, padx=(0,5), pady=5)
+
+    frame_fecha = tk.Frame(form)
+    frame_fecha.grid(row=1, column=1, pady=5, sticky="w")
+
+    selector_fecha = DateEntry(
+        frame_fecha,
+        width=10,
+        background="#B99AD9",
+        foreground="white",
+        borderwidth=1,
+        date_pattern="dd/mm/yyyy"
+    )
+    selector_fecha.pack(side="left")
+
+    # Selector de hora 
+    horas = [f"{h:02d}" for h in range(0, 24)]
+    minutos = [f"{m:02d}" for m in range(0, 60, 5)] 
+    hora_var = tk.StringVar(value="12")
+    min_var = tk.StringVar(value="00")
+
+    hora_menu = ctk.CTkOptionMenu(frame_fecha, values=horas, variable=hora_var, width=55)
+    hora_menu.pack(side="left", padx=(10, 2))
+    min_menu = ctk.CTkOptionMenu(frame_fecha, values=minutos, variable=min_var, width=55)
+    min_menu.pack(side="left")
+
+    try:
+        if fecha.lower() != "sin fecha":
+            fecha_base = fecha.split(" ")[0]
+            selector_fecha.set_date(datetime.strptime(fecha_base, "%d/%m/%Y"))
+            if len(fecha.split()) > 1:
+                hora_str = fecha.split()[1]
+                if ":" in hora_str:
+                    h, m = hora_str.split(":")
+                    hora_var.set(h)
+                    min_var.set(m)
+    except:
+        pass
+
+    botones = ctk.CTkFrame(frame_editor, fg_color="transparent")
+    botones.pack(pady=10)
+
+    def guardar():
+        nuevo_texto = entrada_texto.get().strip() or "Sin título"
+        fecha_str = selector_fecha.get_date().strftime("%Y-%m-%d")
+        hora_str = f"{hora_var.get()}:{min_var.get()}"
+        fecha_hora = datetime.strptime(f"{fecha_str} {hora_str}", "%Y-%m-%d %H:%M")
+    
+        if fecha_hora < datetime.now():
+            messagebox.showwarning("Error", "No puedes establecer un recordatorio en una fecha pasada.")
+            return
+    
+        try:
+            db.crear_recordatorio(usuario_id, nuevo_texto, fecha_hora)
+            messagebox.showinfo("Éxito", "Recordatorio guardado correctamente.")
+            frame_editor.destroy()
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo guardar el recordatorio.\n{e}")
+
+    def cancelar():
+        frame_editor.destroy()
+
+    ctk.CTkButton(
+        botones, text="✔ Guardar",
+        fg_color="#B99AD9", text_color="white",
+        corner_radius=8, width=90,
+        command=guardar).pack(side="left", padx=5)
+
+    ctk.CTkButton(
+        botones, text="✖ Cancelar",
+        fg_color="#F44336", text_color="white",
+        corner_radius=8, width=90,
+        command=cancelar).pack(side="left", padx=5)
 
 # PANEL CENTRAL
 panel_central = ctk.CTkFrame(ventana, fg_color="transparent")
