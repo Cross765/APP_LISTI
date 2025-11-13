@@ -152,9 +152,9 @@ def cargar_notas():
                     messagebox.showerror("Error", f"No se pudo mover la nota.\n{e}")
 
             # opciones del menú
-            ctk.CTkButton(menu, text="✏️ Modificar", fg_color="transparent", text_color="#333333", anchor="w", command=modificar).pack(fill="x", padx=5, pady=2)
-            ctk.CTkButton(menu, text="🗑️ Borrar", fg_color="transparent", text_color="#333333", anchor="w", command=borrar).pack(fill="x", padx=5, pady=2)
-            ctk.CTkButton(menu, text="📂 Mover", fg_color="transparent", text_color="#333333", anchor="w", command=mover).pack(fill="x", padx=5, pady=2)
+            ctk.CTkButton(menu, text="✏️ Modificar", fg_color="transparent", hover_color="#A3B044", text_color="#333333", anchor="w", command=modificar).pack(fill="x", padx=5, pady=2)
+            ctk.CTkButton(menu, text="🗑️ Borrar", fg_color="transparent", hover_color="#A3B044", text_color="#333333", anchor="w", command=borrar).pack(fill="x", padx=5, pady=2)
+            ctk.CTkButton(menu, text="📂 Mover", fg_color="transparent", hover_color="#A3B044", text_color="#333333", anchor="w", command=mover).pack(fill="x", padx=5, pady=2)
 
             # cerrar si clic afuera
             menu.bind("<FocusOut>", lambda e: menu.destroy())
@@ -270,10 +270,10 @@ def mostrar_nota(nota_id):
                 messagebox.showinfo("Info", "Selecciona texto primero")
 
     # Botones de formato
-    ctk.CTkButton(toolbar, text="B", width=30, command=lambda: toggle_tag("bold")).pack(side="left", padx=2)
-    ctk.CTkButton(toolbar, text="I", width=30, command=lambda: toggle_tag("italic")).pack(side="left", padx=2)
-    ctk.CTkButton(toolbar, text="U", width=30, command=lambda: toggle_tag("underline")).pack(side="left", padx=2)
-    ctk.CTkButton(toolbar, text="Color", width=50, command=cambiar_color).pack(side="left", padx=2)
+    ctk.CTkButton(toolbar, text="B", fg_color="#B99AD9", hover_color="#A3B044", width=30, command=lambda: toggle_tag("bold")).pack(side="left", padx=2)
+    ctk.CTkButton(toolbar, text="I", fg_color="#B99AD9", hover_color="#A3B044", width=30, command=lambda: toggle_tag("italic")).pack(side="left", padx=2)
+    ctk.CTkButton(toolbar, text="U", fg_color="#B99AD9", hover_color="#A3B044", width=30, command=lambda: toggle_tag("underline")).pack(side="left", padx=2)
+    ctk.CTkButton(toolbar, text="C", fg_color="#B99AD9", hover_color="#A3B044", width=50, command=cambiar_color).pack(side="left", padx=2)
 
     #  BOTONES GUARDAR / CERRAR 
     botones_frame = ctk.CTkFrame(frame_editor, fg_color="transparent")
@@ -292,8 +292,8 @@ def mostrar_nota(nota_id):
         if frame_editor:
             frame_editor.destroy()
 
-    ctk.CTkButton(botones_frame, text="Guardar", fg_color="#B99AD9", text_color="white", command=guardar_contenido).pack(side="left", padx=5)
-    ctk.CTkButton(botones_frame, text="Cerrar", fg_color="#9E9E9E", text_color="white", command=cerrar_editor).pack(side="left", padx=5)
+    ctk.CTkButton(botones_frame, text="Guardar", fg_color="#B99AD9", hover_color="#A3B044", text_color="white", command=guardar_contenido).pack(side="left", padx=5)
+    ctk.CTkButton(botones_frame, text="Cerrar", fg_color="#9E9E9E", hover_color="#A3B044", text_color="white", command=cerrar_editor).pack(side="left", padx=5)
 
 ### carpetas ###
 carpetas_widgets = {}
@@ -364,8 +364,8 @@ def cargar_carpetas():
                     except Exception as e:
                         messagebox.showerror("Error", f"No se pudo eliminar la carpeta.\n{e}")
 
-            ctk.CTkButton(menu, text="✏️ Editar", fg_color="transparent", text_color="#333333", anchor="w", command=editar).pack(fill="x", padx=5, pady=2)
-            ctk.CTkButton(menu, text="🗑️ Borrar", fg_color="transparent", text_color="#333333", anchor="w", command=borrar).pack(fill="x", padx=5, pady=2)
+            ctk.CTkButton(menu, text="✏️ Editar", fg_color="transparent", hover_color="#A3B044", text_color="#333333", anchor="w", command=editar).pack(fill="x", padx=5, pady=2)
+            ctk.CTkButton(menu, text="🗑️ Borrar", fg_color="transparent", hover_color="#A3B044", text_color="#333333", anchor="w", command=borrar).pack(fill="x", padx=5, pady=2)
 
             menu.bind("<FocusOut>", lambda e: menu.destroy())
             menu.focus_force()
@@ -497,11 +497,11 @@ def mostrar_carpeta(carpeta_id):
                             messagebox.showinfo("Info", "No tienes carpetas creadas.")
                             return
 
-                        # --- Ventana para elegir carpeta ---
+                        # Ventana para elegir carpeta
                         win = ctk.CTkToplevel(ventana)
                         win.title("Mover nota")
                         win.geometry("300x150")
-                        win.grab_set()  # bloquear hasta elegir
+                        win.grab_set()
 
                         ctk.CTkLabel(win, text="Selecciona la carpeta:", font=ctk.CTkFont(size=14)).pack(pady=10)
 
@@ -533,10 +533,10 @@ def mostrar_carpeta(carpeta_id):
                     except Exception as e:
                         messagebox.showerror("Error", f"No se pudo quitar la nota.\n{e}")
 
-                ctk.CTkButton(menu, text="✏️ Modificar", fg_color="transparent", text_color="#333333", anchor="w", command=modificar).pack(fill="x", padx=5, pady=2)
-                ctk.CTkButton(menu, text="🗑️ Borrar", fg_color="transparent", text_color="#333333", anchor="w", command=borrar).pack(fill="x", padx=5, pady=2)
-                ctk.CTkButton(menu, text="📂 Mover", fg_color="transparent", text_color="#333333", anchor="w", command=mover).pack(fill="x", padx=5, pady=2)
-                ctk.CTkButton(menu, text="↩ Quitar de carpeta", fg_color="transparent", text_color="#333333", anchor="w", command=quitar).pack(fill="x", padx=5, pady=2)
+                ctk.CTkButton(menu, text="✏️ Modificar", fg_color="transparent", hover_color="#A3B044", text_color="#333333", anchor="w", command=modificar).pack(fill="x", padx=5, pady=2)
+                ctk.CTkButton(menu, text="🗑️ Borrar", fg_color="transparent", hover_color="#A3B044", text_color="#333333", anchor="w", command=borrar).pack(fill="x", padx=5, pady=2)
+                ctk.CTkButton(menu, text="📂 Mover", fg_color="transparent", hover_color="#A3B044", text_color="#333333", anchor="w", command=mover).pack(fill="x", padx=5, pady=2)
+                ctk.CTkButton(menu, text="↩ Quitar de carpeta", fg_color="transparent", hover_color="#A3B044", text_color="#333333", anchor="w", command=quitar).pack(fill="x", padx=5, pady=2)
 
                 menu.bind("<FocusOut>", lambda e: menu.destroy())
                 menu.focus_force()
@@ -605,6 +605,13 @@ def mostrar_tablero():
             fila = ctk.CTkFrame(frame_sec, fg_color="white", corner_radius=8)
             fila.pack(fill="x", pady=4, padx=15)
 
+            # Al hacer clic en la nota, abre el editor
+            def abrir_item(iid=item_id, t=tipo):
+                if t == "nota":
+                    mostrar_nota(iid)
+                elif t == "carpeta":
+                    mostrar_carpeta(iid)
+
             btn_item = ctk.CTkButton(
                 fila,
                 text=f"{nombre} — {fecha_txt}",
@@ -613,10 +620,106 @@ def mostrar_tablero():
                 hover_color="#EDE7F6",
                 text_color="#333",
                 font=ctk.CTkFont(size=14),
-
+                command=abrir_item
             )
             btn_item.pack(side="left", fill="x", expand=True, padx=(5, 0), pady=2)
-            
+
+            # Menú contextual similar al de las notas normales
+            def abrir_menu(parent, iid=item_id, t=tipo):
+                menu = ctk.CTkToplevel(parent)
+                menu.overrideredirect(True)
+                menu.geometry(f"+{parent.winfo_rootx()+parent.winfo_width()}+{parent.winfo_rooty()}")
+                menu.configure(fg_color="white")
+
+                if t == "nota":
+                    def modificar():
+                        menu.destroy()
+                        nuevo_titulo = simpledialog.askstring("Modificar", "Nuevo título:")
+                        if nuevo_titulo:
+                            try:
+                                db.renombrar_note(iid, nuevo_titulo.strip())
+                                mostrar_tablero()
+                            except Exception as e:
+                                messagebox.showerror("Error", f"No se pudo modificar.\n{e}")
+
+                    def borrar():
+                        menu.destroy()
+                        if messagebox.askyesno("Confirmar", "¿Eliminar esta nota?"):
+                            try:
+                                db.borrar_note(iid)
+                                mostrar_tablero()
+                            except Exception as e:
+                                messagebox.showerror("Error", f"No se pudo borrar.\n{e}")
+
+                    def mover():
+                        menu.destroy()
+                        try:
+                            carpetas = db.listar_carpetas(usuario_id)
+                            if not carpetas:
+                                messagebox.showinfo("Info", "No tienes carpetas creadas.")
+                                return
+
+                            win = ctk.CTkToplevel(ventana)
+                            win.title("Mover nota")
+                            win.geometry("300x150")
+                            win.grab_set()
+
+                            ctk.CTkLabel(win, text="Selecciona la carpeta:", font=ctk.CTkFont(size=14)).pack(pady=10)
+
+                            nombres = [nombre for cid, nombre in carpetas]
+                            ids = {nombre: cid for cid, nombre in carpetas}
+
+                            seleccion = tk.StringVar(value=nombres[0])
+                            combo = ctk.CTkOptionMenu(win, values=nombres, variable=seleccion)
+                            combo.pack(pady=5)
+
+                            def confirmar():
+                                elegido = seleccion.get()
+                                db.mover_nota(iid, ids[elegido])
+                                messagebox.showinfo("Éxito", f"Nota movida a la carpeta '{elegido}'.")
+                                mostrar_tablero()
+                                win.destroy()
+
+                            ctk.CTkButton(win, text="Mover", fg_color="#B99AD9", text_color="white", command=confirmar).pack(pady=10)
+
+                        except Exception as e:
+                            messagebox.showerror("Error", f"No se pudo mover la nota.\n{e}")
+
+                    ctk.CTkButton(menu, text="✏️ Modificar", fg_color="transparent", hover_color="#A3B044",
+                                  text_color="#333333", anchor="w", command=modificar).pack(fill="x", padx=5, pady=2)
+                    ctk.CTkButton(menu, text="🗑️ Borrar", fg_color="transparent", hover_color="#A3B044",
+                                  text_color="#333333", anchor="w", command=borrar).pack(fill="x", padx=5, pady=2)
+                    ctk.CTkButton(menu, text="📂 Mover", fg_color="transparent", hover_color="#A3B044",
+                                  text_color="#333333", anchor="w", command=mover).pack(fill="x", padx=5, pady=2)
+
+                elif t == "carpeta":
+                    def editar():
+                        menu.destroy()
+                        nuevo_nombre = simpledialog.askstring("Editar carpeta", "Nuevo nombre:")
+                        if nuevo_nombre:
+                            try:
+                                db.renombrar_carpeta(iid, nuevo_nombre.strip())
+                                mostrar_tablero()
+                            except Exception as e:
+                                messagebox.showerror("Error", f"No se pudo editar la carpeta.\n{e}")
+
+                    def borrar():
+                        menu.destroy()
+                        if messagebox.askyesno("Confirmar", "¿Eliminar esta carpeta?"):
+                            try:
+                                db.borrar_carpeta(iid)
+                                mostrar_tablero()
+                            except Exception as e:
+                                messagebox.showerror("Error", f"No se pudo borrar la carpeta.\n{e}")
+
+                    ctk.CTkButton(menu, text="✏️ Editar", fg_color="transparent", hover_color="#A3B044",
+                                  text_color="#333333", anchor="w", command=editar).pack(fill="x", padx=5, pady=2)
+                    ctk.CTkButton(menu, text="🗑️ Borrar", fg_color="transparent", hover_color="#A3B044",
+                                  text_color="#333333", anchor="w", command=borrar).pack(fill="x", padx=5, pady=2)
+
+                menu.bind("<FocusOut>", lambda e: menu.destroy())
+                menu.focus_force()
+
             btn_menu = ctk.CTkButton(
                 fila,
                 text="⋮",
@@ -624,8 +727,10 @@ def mostrar_tablero():
                 fg_color="transparent",
                 hover_color="#EEE",
                 text_color="#555",
+                command=lambda p=fila, i=item_id, t=tipo: abrir_menu(p, i, t)
             )
             btn_menu.pack(side="right", padx=5)
+
 
 
 # PANEL DERECHO (calendario, temporizador, sonidos) 
@@ -821,19 +926,19 @@ bf = ctk.CTkFrame(temporizador_frame, fg_color="transparent")
 bf.pack(pady=4)
 
 ctk.CTkButton(bf, text="▶ Iniciar", width=75, height=28,
-              fg_color="#B99AD9", text_color="white",
+              fg_color="#B99AD9", hover_color="#A3B044" ,text_color="white",
               command=iniciar).grid(row=0, column=0, padx=2)
 
 ctk.CTkButton(bf, text="⏸", width=32, height=28,
-              fg_color="#F4F4F4", text_color="#333333",
+              fg_color="#F4F4F4", hover_color="#A3B044",text_color="#333333",
               command=pausar).grid(row=0, column=1, padx=2)
 
 ctk.CTkButton(bf, text="↻", width=32, height=28,
-              fg_color="#F4F4F4", text_color="#333333",
+              fg_color="#F4F4F4", hover_color="#A3B044",text_color="#333333",
               command=reiniciar).grid(row=0, column=2, padx=2)
 
 ctk.CTkButton(bf, text="⚙", width=32, height=28,
-              fg_color="#F4F4F4", text_color="#333333",
+              fg_color="#F4F4F4", hover_color="#A3B044",text_color="#333333",
               command=mostrar_temporizador_config).grid(row=0, column=3, padx=2)
 
 
@@ -888,166 +993,6 @@ agregar_sonido("Rio", "#EBF2B6", "#A3B044")
 agregar_sonido("Jazz", "#EBF2B6", "#A3B044")
 agregar_sonido("Meditación", "#EBF2B6", "#A3B044")
 
-# === SECCIÓN DE RECORDATORIOS ===
-frame_recordatorios = ctk.CTkFrame(sidebar_derecho, fg_color="#F8F5FB", corner_radius=12)
-frame_recordatorios.pack(fill="x", padx=8, pady=(20, 10))
-
-titulo_rec = ctk.CTkLabel(
-    frame_recordatorios,
-    text="⏰ Recordatorios",
-    font=ctk.CTkFont(size=15, weight="bold"),
-    text_color="#5A189A"
-)
-titulo_rec.pack(anchor="w", padx=12, pady=(8, 6))
-
-# Contenedor de lista
-lista_recordatorios = ctk.CTkFrame(frame_recordatorios, fg_color="#FFFFFF", corner_radius=8)
-lista_recordatorios.pack(fill="x", padx=10, pady=(0, 10))
-
-recordatorios = []  # temporal
-
-def cargar_recordatorios():
-    for widget in lista_recordatorios.winfo_children():
-        widget.destroy()
-
-    if not recordatorios:
-        ctk.CTkLabel(
-            lista_recordatorios,
-            text="(sin recordatorios)",
-            text_color="#888888",
-            font=ctk.CTkFont(size=13, slant="italic")
-        ).pack(pady=5)
-        return
-
-    for idx, (texto, fecha) in enumerate(recordatorios):
-        item = ctk.CTkFrame(lista_recordatorios, fg_color="#F6F0FF", corner_radius=6)
-        item.pack(fill="x", pady=3, padx=5)
-
-        btn_rec = ctk.CTkButton(
-            item,
-            text=f"📅 {texto} — {fecha}",
-            fg_color="#F6F0FF",
-            hover_color="#E9DFFF",
-            text_color="#333333",
-            anchor="w",
-            command=lambda i=idx: mostrar_recordatorio(i))
-        btn_rec.pack(fill="x", padx=5, pady=3)
-
-        btn_borrar = ctk.CTkButton(item, text="✖", width=25, fg_color="transparent", text_color="#D32F2F", hover_color="#FCE4EC", command=lambda i=idx: eliminar_recordatorio(i))
-        btn_borrar.pack(side="right", padx=5)
-
-def eliminar_recordatorio(idx):
-    del recordatorios[idx]
-    cargar_recordatorios()
-
-def agregar_recordatorio():
-    recordatorios.append(("Nuevo", "Sin fecha"))
-    cargar_recordatorios()
-
-btn_agregar_rec = ctk.CTkButton(frame_recordatorios,text="+ Agregar recordatorio", fg_color="#B99AD9", text_color="white", hover_color="#A57CC7", corner_radius=8, command=agregar_recordatorio)
-btn_agregar_rec.pack(pady=(0, 10))
-
-cargar_recordatorios()
-
-def mostrar_recordatorio(idx):
-    global frame_editor
-    if frame_editor:
-        frame_editor.destroy()
-
-    texto, fecha = recordatorios[idx]
-
-    frame_editor = ctk.CTkFrame(contenido, fg_color="white")
-    frame_editor.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
-
-    ctk.CTkLabel(
-        frame_editor,
-        text="🕒 Editar Recordatorio",
-        font=ctk.CTkFont(size=18, weight="bold"),
-        text_color="#4A148C").pack(pady=(10, 10))
-
-    form = ctk.CTkFrame(frame_editor, fg_color="transparent")
-    form.pack(pady=10)
-
-    # Nombre del recordatorio 
-    ctk.CTkLabel(form, text="Nombre:", text_color="#333333").grid(row=0, column=0, padx=(0,5), pady=5)
-    entrada_texto = ctk.CTkEntry(form, width=220)
-    entrada_texto.insert(0, texto)
-    entrada_texto.grid(row=0, column=1, pady=5)
-
-    # Selector de fecha 
-    ctk.CTkLabel(form, text="Fecha:", text_color="#333333").grid(row=1, column=0, padx=(0,5), pady=5)
-
-    frame_fecha = tk.Frame(form)
-    frame_fecha.grid(row=1, column=1, pady=5, sticky="w")
-
-    selector_fecha = DateEntry(
-        frame_fecha,
-        width=10,
-        background="#B99AD9",
-        foreground="white",
-        borderwidth=1,
-        date_pattern="dd/mm/yyyy"
-    )
-    selector_fecha.pack(side="left")
-
-    # Selector de hora 
-    horas = [f"{h:02d}" for h in range(0, 24)]
-    minutos = [f"{m:02d}" for m in range(0, 60, 5)] 
-    hora_var = tk.StringVar(value="12")
-    min_var = tk.StringVar(value="00")
-
-    hora_menu = ctk.CTkOptionMenu(frame_fecha, values=horas, variable=hora_var, width=55)
-    hora_menu.pack(side="left", padx=(10, 2))
-    min_menu = ctk.CTkOptionMenu(frame_fecha, values=minutos, variable=min_var, width=55)
-    min_menu.pack(side="left")
-
-    try:
-        if fecha.lower() != "sin fecha":
-            fecha_base = fecha.split(" ")[0]
-            selector_fecha.set_date(datetime.strptime(fecha_base, "%d/%m/%Y"))
-            if len(fecha.split()) > 1:
-                hora_str = fecha.split()[1]
-                if ":" in hora_str:
-                    h, m = hora_str.split(":")
-                    hora_var.set(h)
-                    min_var.set(m)
-    except:
-        pass
-
-    botones = ctk.CTkFrame(frame_editor, fg_color="transparent")
-    botones.pack(pady=10)
-
-    def guardar():
-        nuevo_texto = entrada_texto.get().strip() or "Sin título"
-        fecha_str = selector_fecha.get_date().strftime("%Y-%m-%d")
-        hora_str = f"{hora_var.get()}:{min_var.get()}"
-        fecha_hora = datetime.strptime(f"{fecha_str} {hora_str}", "%Y-%m-%d %H:%M")
-    
-        if fecha_hora < datetime.now():
-            messagebox.showwarning("Error", "No puedes establecer un recordatorio en una fecha pasada.")
-            return
-    
-        try:
-            db.crear_recordatorio(usuario_id, nuevo_texto, fecha_hora)
-            messagebox.showinfo("Éxito", "Recordatorio guardado correctamente.")
-            frame_editor.destroy()
-        except Exception as e:
-            messagebox.showerror("Error", f"No se pudo guardar el recordatorio.\n{e}")
-
-    def cancelar():
-        frame_editor.destroy()
-
-    ctk.CTkButton(
-        botones, text="✔ Guardar",
-        fg_color="#B99AD9", text_color="white",
-        corner_radius=8, width=90,
-        command=guardar).pack(side="left", padx=5)
-
-    ctk.CTkButton(
-        botones, text="✖ Cancelar",
-        fg_color="#F44336", text_color="white",
-        corner_radius=8, width=90,
-        command=cancelar).pack(side="left", padx=5)
 
 # PANEL CENTRAL
 panel_central = ctk.CTkFrame(ventana, fg_color="transparent")
@@ -1092,29 +1037,42 @@ btn_accion.pack(fill="x", pady=10, padx=5)
 btn_accion.pack_forget()
 
 def seleccionar_boton(nombre_boton):
+    global frame_editor
+
+    # Cambiar color del botón seleccionado
     for nombre, boton in botones.items():
         if nombre == nombre_boton:
             boton.configure(fg_color="#B99AD9", text_color="white")
         else:
             boton.configure(fg_color="transparent", text_color="#4C4C4C")
 
-    if nombre_boton == "Mis Notas":
+    for widget in contenido.winfo_children():
+        widget.destroy()
+    for widget in scroll_secciones.winfo_children():
+        widget.destroy()
+    btn_accion.pack_forget()
+
+    if nombre_boton == "Tablero":
+        mostrar_tablero()
+
+    elif nombre_boton == "Mis Notas":
+        sidebar.grid()  # Vuelve a mostrar el panel izquierdo
         btn_accion.pack(fill="x", pady=10, padx=5)
         btn_accion.configure(text="+ Agregar nota", command=nueva_nota)
         cargar_notas()
 
     elif nombre_boton == "Carpetas":
+        sidebar.grid() 
         btn_accion.pack(fill="x", pady=10, padx=5)
         btn_accion.configure(text="+ Agregar carpeta", command=nueva_carpeta)
         cargar_carpetas()
-    
-    elif nombre_boton == "Tablero":
-        mostrar_tablero()
 
     else:
+        sidebar.grid()
         btn_accion.pack_forget()
         for widget in scroll_secciones.winfo_children():
             widget.destroy()
+
 
 for i in range(len(nombres)):
     encabezado.grid_columnconfigure(i, weight=1, uniform="col")

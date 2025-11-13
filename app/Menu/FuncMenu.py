@@ -8,11 +8,11 @@ def cargar_icono(ruta):
     except:
         return None
 
-DB_HOST = "dpg-d3elbeer433s73eppof0-a.oregon-postgres.render.com"
+DB_HOST = "dpg-d49lmf1r0fns738l7vkg-a.oregon-postgres.render.com"
 DB_PORT = "5432"
-DB_NAME = "listi_7mwu"
-DB_USER = "listi_7mwu_user"
-DB_PASS = "cPEEWPBRxx4R0jnyfym6FebpEVGgRWhB"
+DB_NAME = "listi_6ntc"
+DB_USER = "listi_6ntc_user"
+DB_PASS = "1nCSIvXNljC0oVn48OXJMQUMsCwVlQBv"
 
 def get_conn():
     return psycopg2.connect(
